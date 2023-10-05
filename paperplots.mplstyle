@@ -1,0 +1,22 @@
+axes.edgecolor: black
+axes.facecolor: [1, 1, 1, 1]
+figure.facecolor:  [1, 1, 1, 1]
+figure.edgecolor: black
+figure.constrained_layout.use: True
+text.color:  black
+axes.labelcolor: black
+axes.labelsize: 8
+ytick.color: black
+xtick.color:  black
+font.family: serif
+font.serif: Liberation Serif
+xtick.labelsize: 6.5
+ytick.labelsize: 6.5
+axes.titlesize: 8
+figure.titlesize: 10
+legend.framealpha: 0
+legend.fontsize: 8
+savefig.dpi: 600
+axes.linewidth: 0.2
+lines.linewidth: 0.4
+axes.prop_cycle: cycler(color = ["red", "purple", "forestgreen", "dodgerblue", "fuchsia", "darkorange"])
