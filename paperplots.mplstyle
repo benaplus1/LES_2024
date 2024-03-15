@@ -8,8 +8,8 @@ axes.labelcolor: black
 axes.labelsize: 8
 ytick.color: black
 xtick.color:  black
-font.family: serif
-font.serif: Liberation Serif
+font.family: sans
+#font.serif: Arial
 xtick.labelsize: 6.5
 ytick.labelsize: 6.5
 axes.titlesize: 8
