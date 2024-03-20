@@ -8,10 +8,6 @@ from matplotlib import colors
 from matplotlib import colormaps as mcm
 from matplotlib.lines import Line2D
 from matplotlib.cm import ScalarMappable
-# import matplotlib as mpl
-# from metpy.units import units
-# from metpy.plots import SkewT
-# import metpy
 from pandas import date_range
 from time import perf_counter
 from glob import glob
@@ -24,7 +20,6 @@ from functools import partial
 from cartopy import feature as cfeature
 import cartopy.crs as ccrs
 from matplotlib import ticker as mticker
-# from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 from matplotlib import font_manager as fm
 fontdir = "/home/ascheb/libfonts/*.ttf"
@@ -111,12 +106,13 @@ def add_cartofeatures_zoomdomain(afile_control, geoax):
 def make_divplots(t):
     ramscrs = ccrs.Stereographic(central_longitude = -80, central_latitude = 42)
     print("Plotting field Div")
-    folderprepath = "/moonbow/ascheb/les/"
-    figprepath = f"{folderprepath}PaperFigs/"
+    figprepath = input("Enter the directory where you want to put plan views for each time").rstrip("/ ")
     ftime = t.strftime("%Y-%m-%d-%H%M%S")
     print(ftime)
-    afile_control = xr.open_dataset(f"{folderprepath}2010/hires_control/processed_data/mvars-cart-{ftime}-g1.nc")
-    afile_nolake = xr.open_dataset(f"{folderprepath}2010/hires_nolake/processed_data/mvars-cart-{ftime}-g1.nc")
+    controlprepath = input("Enter the directory containing the post-processed data for the CONTROL simulation: ").rstrip("/")
+    nlhprepath = input("Enter the directory containing the post-processed data for the NLH simulation: ").rstrip("/ ")
+    afile_control = xr.open_dataset(f"{controlprepath}/mvars-cart-{ftime}-g1.nc")
+    afile_nolake = xr.open_dataset(f"{nlhprepath}/mvars-cart-{ftime}-g1.nc")
     # afile_pasturebroadforest = xr.open_dataset(f"{folderpath}pasturebroadforest-wind/processed_data/mergedvars_{ftime}.nc")
     if not path.exists(f"{figprepath}combplots"):
         mkdir(f"{figprepath}combplots")
@@ -169,12 +165,13 @@ def make_divplots(t):
 
 def make_combplots(fields, t):
     ramscrs = ccrs.Stereographic(central_longitude = -80, central_latitude = 42)
-    folderprepath = "/moonbow/ascheb/les/"
-    figprepath = f"{folderprepath}PaperFigs/"
+    figprepath = input("Enter the directory where you want the figures to go").rstrip("/ ")
     ftime = t.strftime("%Y-%m-%d-%H%M%S")
     print(ftime)
-    afile_control = xr.open_dataset(f"{folderprepath}2010/hires_control/processed_data/mvars-cart-{ftime}-g1.nc")
-    afile_nolake = xr.open_dataset(f"{folderprepath}2010/hires_nolake/processed_data/mvars-cart-{ftime}-g1.nc")
+    controlprepath = input("Enter the directory containing the post-processed data for the CONTROL simulation: ").rstrip("/")
+    nlhprepath = input("Enter the directory containing the post-processed data for the NLH simulation: ").rstrip("/ ")
+    afile_control = xr.open_dataset(f"{controlprepath}/mvars-cart-{ftime}-g1.nc")
+    afile_nolake = xr.open_dataset(f"{nlhprepath}/mvars-cart-{ftime}-g1.nc")
     # afile_pasturebroadforest = xr.open_dataset(f"{folderpath}pasturebroadforest-wind/processed_data/mergedvars_{ftime}.nc")
     if not path.exists(f"{figprepath}combplots"):
         mkdir(f"{figprepath}combplots")
@@ -327,15 +324,13 @@ if runtype.lower() == "plot":
     
     
 elif runtype.lower() == "animate":
-    figprepath = input("Enter the folder where the plots are stored: ")
+    figprepath = input("Enter the folder where the frames for each time are stored: ")
     st = perf_counter()
     reload(mkv)
-    # fields = ["bowen"]
-    # fields = ["srftemp", "rainrate", "srfpres", "vapplan", "cldtop", "uwind", "lhflux", "shflux", "bowen", "vertintcond", "vertintice", "vertintliq"]
     fields = ["snowrate", "shcomp", "lhcomp", "cldtop", "vapcomp", "divcomp", "wcomp"]
     # fields = ["w"]
     for field in fields:
-        mkv.makevidcomb(figprepath, field)
+        mkv.makevidcomb(figprepath, f"{field}_carto")
     et = perf_counter()
     print(f"Animation took {et-st:.2f} seconds")
     
@@ -368,8 +363,6 @@ elif runtype.lower() == "both":
     figprepath = input("Enter the path where the figures are stored: ")
     st = perf_counter()
     reload(mkv)
-    # fields = ["bowen"]
-    # fields = ["srftemp", "rainrate", "srfpres", "vapplan", "cldtop", "uwind", "lhflux", "shflux", "bowen", "vertintcond", "vertintice", "vertintliq"]
     fields = ["snowrate", "shcomp", "lhcomp", "cldtop", "vapcomp", "divcomp", "wcomp"]
     for field in fields:
         mkv.makevidcomb(figprepath, field)

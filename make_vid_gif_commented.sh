@@ -4,7 +4,7 @@ rm -f output.gif output_slow.gif video.mp4
 
 #CHANGE THIS to the folder and prefix of your output images
 
-FOLDER_NAME=/moonbow/ascheb/les/PresFigs/3dplots_les/nolake/div3d_hires_nolake
+FOLDER_NAME=/moonbow/ascheb/les/PaperFigs/combplots/bowen_carto
 
 
 #Create the color palette for the animated GIF
