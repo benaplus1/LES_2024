@@ -113,7 +113,7 @@ def make_divplots(figprepath, controlprepath, nlhprepath, t):
         tercmap = ax.pcolormesh(afile_control["x"][50:650], afile_control["y"][450:1050], afile_control["Topo"][450:1050, 50:650], cmap = modtopocmap, vmin = 0, vmax = 1000, zorder = 0, transform = ramscrs)
     divalt1 = 350 #m AMSL, altitude at which to evaluate horizontal divergence on bottom row of plots.
     divalt2 = 500 #m AMSL, altitude at which to evaluate horizontal divergence on top row of plot
-    fig.suptitle(f"Horizontal Divergence at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+    fig.suptitle(f"Horizontal Divergence at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
     ax1.set_title(f"CONTROL {divalt1}m")
     ax2.set_title(f"NLH {divalt1}m")
     ax3.set_title(f"CONTROL {divalt2}m")
@@ -188,7 +188,7 @@ def make_combplots(figprepath, controlprepath, nlhprepath, fields, t):
             snowbounds = [0.01, 0.1, 0.5, 1, 2, 3, 4, 5]
             snownorm = BoundaryNorm(snowbounds, ncolors = 256, extend = "max")
             fakecontour = Line2D([], [], linestyle = "-", linewidth = 0.375, color = "black", label = "Water Bodies")
-            fig.suptitle(f"Snowfall Rate at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+            fig.suptitle(f"Snowfall Rate at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
             controlsnowrate = afile_control["SnowPrecipRate"]+afile_control["AggPrecipRate"]+afile_control["PrisPrecipRate"]
             nolakesnowrate = afile_nolake["SnowPrecipRate"]+afile_nolake["AggPrecipRate"]+afile_nolake["PrisPrecipRate"]
             ax1.pcolormesh(afile_control["x"], afile_control["y"], afile_control["PatchArea"][0,:,:].where(afile_control["PatchArea"][0,:,:]==1), cmap = "Blues", vmin = 0, vmax = 1, zorder = 1, transform = ramscrs)
@@ -202,7 +202,7 @@ def make_combplots(figprepath, controlprepath, nlhprepath, fields, t):
 
         elif field == "w":
             walt = 700 #m AMSL, altitude at which to evalute w
-            fig.suptitle(f"{walt} m AMSL Vertical Velocity at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+            fig.suptitle(f"{walt} m AMSL Vertical Velocity at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
             wmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["w"].sel(z = walt, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "RdBu_r", vmin = -3, vmax = 3, zorder = 1, transform = ramscrs)
             ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["w"].sel(z = walt, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "RdBu_r", vmin = -3, vmax = 3, zorder = 1, transform = ramscrs)
             cbar = fig.colorbar(wmp, ax = [ax1, ax2], orientation = "horizontal", fraction = 0.05, extend = "both"); cbar.set_label(f"{walt}m AMSL Vertical Velocity ($\mathrm{{m \ s^{{-1}}}}$)")
@@ -210,34 +210,47 @@ def make_combplots(figprepath, controlprepath, nlhprepath, fields, t):
             
         elif field == "vapmix":
             vapalt = 700 #m AMSL, altitude at which to evaluate vapor mixing ratio.
-            fig.suptitle(f"{vapalt} m AMSL Water Vapor at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+            fig.suptitle(f"{vapalt} m AMSL Water Vapor at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
             vapmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["VaporMix"].sel(z = vapalt, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = 0, vmax = 2, zorder = 1, transform = ramscrs)
             ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["VaporMix"].sel(z = vapalt, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = 0, vmax = 2, zorder = 1, transform = ramscrs)
             cbar = fig.colorbar(vapmp, ax = [ax1, ax2], orientation = "horizontal", fraction = 0.05, extend = "both"); cbar.set_label(f"{vapalt}m AMSL Vapor Mixing Ratio ($\mathrm{{g \ kg^{{-1}}}}$)")
             fig.savefig(f"{figprepath}/combplots/vapmix_carto_{t.strftime('%d-%H%M')}z.png")
             
         elif field == "shflux":
-            fig.suptitle(f"Surface Sensible Heat Flux at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+            fig.suptitle(f"Surface Sensible Heat Flux at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
             shmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["SensibleHeatFlux"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "bwr", vmin = -500, vmax = 500, zorder = 1, transform = ramscrs)
             ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["SensibleHeatFlux"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "bwr", vmin = -500, vmax = 500, zorder = 1, transform = ramscrs)
             cbar = fig.colorbar(shmp, ax = [ax1, ax2], orientation = "horizontal", fraction = 0.05, extend = "both"); cbar.set_label(f"Sensible Heat Flux ($\mathrm{{W \ m^{{-2}}}}$)")
             fig.savefig(f"{figprepath}/combplots/shflux_carto_{t.strftime('%d-%H%M')}z.png")
             
         elif field == "lhflux":
-            fig.suptitle(f"Surface Latent Heat Flux at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
+            fig.suptitle(f"Surface Latent Heat Flux at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
             lhmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["LatentHeatFlux"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -500, vmax = 500, zorder = 1, transform = ramscrs)
             ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["LatentHeatFlux"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -500, vmax = 500, zorder = 1, transform = ramscrs)
             cbar = fig.colorbar(lhmp, ax = [ax1, ax2], orientation = "horizontal", fraction = 0.05, extend = "both"); cbar.set_label(f"Latent Heat Flux ($\mathrm{{W \ m^{{-2}}}}$)")
             fig.savefig(f"{figprepath}/combplots/lhflux_carto_{t.strftime('%d-%H%M')}z.png")
-            
+
+        elif field == "srftemp":
+            fig.suptitle(f"15 m Air Temperature at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
+            tempmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50,650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["SrfTemp"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "Spectral_r", vmin = 245, vmax = 275, zorder = 1, transform = ramscrs)
+            ax2.pcolormesh(afile_nolake["x"].isel(x = slice(50, 650)), afile_nolake["y"].isel(y = slice(450, 1050)), afile_nolake["SrfTemp"].isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "Spectral_r", vmin = 245, vmax = 275, zorder = 1, transform = ramscrs)
+            cbar = fig.colorbar(tempmp, ax = [ax1, ax2], orientation = "horizontal", fraction = 0.05, extend = "both"); cbar.set_label(f"15 m AGL Air Temperature (K)")
+            fig.savefig(f"{figprepath}/combplots/srftemp_carto_{t.strftime('%d-%H%M')}z.png")
         elif field == "cldtop":
             from palettable.cmocean.sequential import Tempo_10
             cldcmap = Tempo_10.get_mpl_colormap().reversed()
-            fig.suptitle(f"Cloud Top Height at {(t-timedelta(hours=5)).strftime('%d')} Jan - {(t-timedelta(hours=5)).strftime('%H%M')} LT")
-            cldtopmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["CloudTopHeight"].where(afile_control["CloudTopHeight"]>0).isel(x = slice(50, 650), y = slice(450, 1050)), cmap = cldcmap, vmin = 0, vmax = 3000, zorder = 1, transform = ramscrs)
-            ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["CloudTopHeight"].where(afile_nolake["CloudTopHeight"]>0).isel(x = slice(50, 650), y = slice(450, 1050)), cmap = cldcmap, vmin = 0, vmax = 3000, zorder = 1, transform = ramscrs)
-            cldcbar = fig.colorbar(cldtopmp, ax = ax1, orientation = "horizontal", fraction = 0.05, extend = "max"); cldcbar.set_label(f"Cloud Top Height (m AMSL)")
-            tercbar = fig.colorbar(tercmap, ax = ax2, orientation = "horizontal", fraction = 0.05, extend = "max"); tercbar.set_label("Terrain Height (m)")
+            import warnings
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', r'All-NaN slice encountered')
+            #Numpy will freak out when we try to find the cloud height on a column where there are no clouds, so this quiets that down.
+            #Need to limit our cloud top filter to 2km to screen out mid-level overlying clouds
+            cldtop_control = np.nanmax(np.where(afile_control["CloudMassMix"].isel(x = slice(50, 650), y = slice(450, 1050)).sel(z = slice(0, 2000)).values+afile_control["PrisMassMix"].isel(x = slice(50, 650), y = slice(450, 1050)).sel(z = slice(0, 2000)).values > 1e-5, afile_control["z"].sel(z = slice(0,2000)).values[:,None,None], np.nan), axis = 0)
+            cldtop_nolake = np.nanmax(np.where(afile_nolake["CloudMassMix"].isel(x = slice(50, 650), y = slice(450, 1050)).sel(z = slice(0, 2000)).values+afile_nolake["PrisMassMix"].isel(x = slice(50, 650), y = slice(450, 1050)).sel(z = slice(0, 2000)).values > 1e-5, afile_nolake["z"].sel(z = slice(0,2000)).values[:,None,None], np.nan), axis = 0)
+            fig.suptitle(f"Cloud Top Height at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
+            cldtopmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), cldtop_control, cmap = cldcmap, vmin = 0, vmax = 2000, zorder = 1, transform = ramscrs)
+            ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), cldtop_nolake, cmap = cldcmap, vmin = 0, vmax = 2000, zorder = 1, transform = ramscrs)
+            cldcbar = fig.colorbar(cldtopmp, ax = [ax1], orientation = "horizontal", fraction = 0.05, extend = "max"); cldcbar.set_label(f"Cloud Top Height (m AMSL)")
+            tercbar = fig.colorbar(tercmap, ax = [ax2], orientation = "horizontal", fraction = 0.05, extend = "max"); tercbar.set_label("Terrain Height (m)")
             fig.savefig(f"{figprepath}/combplots/cldtop_carto_{t.strftime('%d-%H%M')}z.png")
             
         plt.close(); del fig; del ax1; del ax2;
@@ -309,7 +322,7 @@ if runtype.lower() == "plot":
     
 elif runtype.lower() == "animate":
     figprepath = input("Enter the directory containing the 'combplots' folder"
-                       "where the plan view frames are saved: ").rstrip("/ ")
+                       " where the plan view frames are saved: ").rstrip("/ ")
     figprepath = f"{figprepath}/combplots"
     if not path.exists(figprepath):
         raise Exception("combplots folder not found in the specified subdirectory!")
@@ -319,12 +332,13 @@ elif runtype.lower() == "animate":
     '''
     Available fields are:
     snowrate: Instantaneous snowfall rate across the entire domain
-    cldtop: Instantaneous cloud top height over a subdomain downwind of Lake Erie
-    shflux: Instantaneous surface sensible heat flux over a subdomain downwind of Lake Erie
-    lhflux: Instantaneous latent heat flux over a subdomain downwind of Lake Erie
-    vapmix: Instantaneous water vapor mixing ratio at a user-chosen altitude over a subdomain downwind of Lake Erie
-    w: Instantaneous vertical velocity at a user-chosen altitude over a subdomain downwind of Lake Erie
-    div: Instantaneous horizontal divergence at two user-chosen altitudes over a subdomain downwind of Lake Erie
+    cldtop: Instantaneous cloud top height over the northwest part of the model domain
+    shflux: Instantaneous surface sensible heat flux over the northwest part of the model domain
+    lhflux: Instantaneous latent heat flux over the northwest part of the model domain
+    srftemp: Instantaneous 15 m AGL temperature over the northwest part of the model domain
+    vapmix: Instantaneous water vapor mixing ratio at a user-chosen altitude over the northwest part of the model domain
+    w: Instantaneous vertical velocity at a user-chosen altitude over the northwest part of the model domain
+    div: Instantaneous horizontal divergence at two user-chosen altitudes over the northwest part of the model domain
     '''
     fields = fields.split(",")
     fields = [i.strip().lower() for i in fields]
@@ -347,13 +361,14 @@ elif runtype.lower() == "both":
     fields = input("Enter the list of fields you want to plot, as comma-separated values: ")
     '''
     Available fields are:
-    snowrate: Plots the instantaneous snowfall rate across the entire domain
-    cldtop: Plots the instantaneous cloud top height over a subdomain downwind of Lake Erie
-    shflux: Plots the instantaneous surface sensible heat flux over a subdomain downwind of Lake Erie
-    lhflux: Plots the instantaneous latent heat flux over a subdomain downwind of Lake Erie
-    vapmix: Plots the instantaneous water vapor mixing ratio at a user-chosen altitude over a subdomain downwind of Lake Erie
-    w: Plots the instantaneous vertical velocity at a user-chosen altitude over a subdomain downwind of Lake Erie
-    div: Plots the instantaneous horizontal divergence at two user-chosen altitudes over a subdomain downwind of Lake Erie
+    snowrate: Instantaneous snowfall rate across the entire domain
+    cldtop: Instantaneous cloud top height over the northwest part of the model domain
+    shflux: Instantaneous surface sensible heat flux over the northwest part of the model domain
+    lhflux: Instantaneous latent heat flux over the northwest part of the model domain
+    srftemp: Instantaneous 15 m AGL temperature over the northwest part of the model domain
+    vapmix: Instantaneous water vapor mixing ratio at a user-chosen altitude over the northwest part of the model domain
+    w: Instantaneous vertical velocity at a user-chosen altitude over the northwest part of the model domain
+    div: Instantaneous horizontal divergence at two user-chosen altitudes over the northwest part of the model domain
     '''
     fields = fields.split(",")
     fields = [i.strip() for i in fields]
