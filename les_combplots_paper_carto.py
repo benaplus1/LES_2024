@@ -112,20 +112,16 @@ def make_divplots(figprepath, controlprepath, nlhprepath, t):
         ax.text(left+0.5*width, bottom+0.5*height, axlabels[i], fontsize = 10, transform = ax.transAxes, horizontalalignment = "center", verticalalignment = "center", zorder = 5, color = "black")
         tercmap = ax.pcolormesh(afile_control["x"][50:650], afile_control["y"][450:1050], afile_control["Topo"][450:1050, 50:650], cmap = modtopocmap, vmin = 0, vmax = 1000, zorder = 0, transform = ramscrs)
     divalt1 = 350 #m AMSL, altitude at which to evaluate horizontal divergence on bottom row of plots.
-    divalt2 = 500 #m AMSL, altitude at which to evaluate horizontal divergence on top row of plot
+    divalt2 = 1500 #m AMSL, altitude at which to evaluate horizontal divergence on top row of plot
     fig.suptitle(f"Horizontal Divergence at {t.strftime('%d')} Jan - {t.strftime('%H%M')} UTC")
     ax1.set_title(f"CONTROL {divalt1}m")
     ax2.set_title(f"NLH {divalt1}m")
     ax3.set_title(f"CONTROL {divalt2}m")
     ax4.set_title(f"NLH {divalt2}m")
-    horizdiv_control_alt1 = np.gradient(afile_control["u"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 1)+np.gradient(afile_control["v"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 0)
-    horizdiv_control_alt2 = np.gradient(afile_control["u"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 1)+np.gradient(afile_control["v"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 0)
-    horizdiv_nolake_alt1 = np.gradient(afile_nolake["u"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 1)+np.gradient(afile_nolake["v"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 0)
-    horizdiv_nolake_alt2 = np.gradient(afile_nolake["u"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 1)+np.gradient(afile_nolake["v"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)).values, 1000, axis = 0)
-    divmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), horizdiv_control_alt1, cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
-    ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), horizdiv_nolake_alt1, cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
-    ax3.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), horizdiv_control_alt2, cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
-    ax4.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), horizdiv_nolake_alt2, cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
+    divmp = ax1.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["HorizDiv"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
+    ax2.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["HorizDiv"].sel(z = divalt1, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
+    ax3.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_control["HorizDiv"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
+    ax4.pcolormesh(afile_control["x"].isel(x = slice(50, 650)), afile_control["y"].isel(y = slice(450, 1050)), afile_nolake["HorizDiv"].sel(z = divalt2, method = "nearest").isel(x = slice(50, 650), y = slice(450, 1050)), cmap = "BrBG", vmin = -5*10**(-3), vmax = 5*10**(-3), zorder = 1, transform = ramscrs)
     cbar1 = fig.colorbar(divmp, ax = [ax1, ax2, ax3, ax4], orientation = "horizontal", fraction = 0.05, aspect = 40, extend = "both", pad = 0.02); cbar1.set_label("Horizontal Divergence ($\mathrm{{s^{{-1}}}}$)", labelpad = 7)
     cbar2 = fig.colorbar(tercmap, ax = [ax1, ax2, ax3, ax4], orientation = "vertical", location = "left", fraction = 0.05, aspect = 40, extend = "max", pad = 0.02); cbar2.set_label("Terrain height (m)", labelpad = 7)
     for cbari in [cbar1, cbar2]:
@@ -277,10 +273,22 @@ if runtype.lower() == "plot":
           "'combplots', where these plots will be placed. This is done to avoid cluttering up the directory if you decide"
           " to put all figures for recreation in the same folder.")
     controlprepath = input("Enter the directory containing the post-processed data for the CONTROL simulation: ").rstrip("/")
+    if not path.exists(controlprepath):
+        raise Exception("CONTROL post-processed files not found!")
     nlhprepath = input("Enter the directory containing the post-processed data for the NLH simulation: ").rstrip("/ ")
     st = perf_counter()
+    if not path.exists(nlhprepath):
+        raise Exception("NLH post-processed files not found!")
     t0 = input("Enter the start time for plotting in yyyy-mm-dd-HHMMSS format: ")
     tf = input("Enter the end time for plotting in yyyy-mm-dd-HHMMSS format: ")
+    if (datetime.strptime(tf, "%Y-%m-%d-%H%M%S") - datetime.strptime(t0, "%Y-%m-%d-%H%M%S") < timedelta(seconds = 1)):
+        raise Exception("End time must be later than start time!")
+    print(f"{controlprepath}/mvars-cart-{t0}-g1.nc") 
+    print(f"{nlhprepath}/mvars-cart-{t0}-g1.nc")
+    if (not path.exists(f"{controlprepath}/mvars-cart-{t0}-g1.nc")) or (not path.exists(f"{nlhprepath}/mvars-cart-{t0}-g1.nc")):
+        raise Exception("Selected start time not available in post-processed data!")
+    if (not path.exists(f"{controlprepath}/mvars-cart-{tf}-g1.nc")) or (not path.exists(f"{nlhprepath}/mvars-cart-{tf}-g1.nc")):
+        raise Exception("Selected end time not available in post-processed data!")
     fields = input("Enter the list of fields you want to plot, as comma-separated values: ")
     '''
     Available fields are:
@@ -293,7 +301,7 @@ if runtype.lower() == "plot":
     div: Plots the instantaneous horizontal divergence at two user-chosen altitudes over a subdomain downwind of Lake Erie
     '''
     fields = fields.split(",")
-    fields = [i.strip() for i in fields]
+    fields = [i.strip().lower() for i in fields]
     print(fields)
     plotdiv = False
     if "div" in fields:
@@ -305,12 +313,14 @@ if runtype.lower() == "plot":
     seq = input("Is this a test run? Yes or No? ")
     if seq.lower() == "yes":
         for t in tlist:
-            make_combplots(figprepath, controlprepath, nlhprepath, fields, t)
+            if len(fields) > 0:
+                make_combplots(figprepath, controlprepath, nlhprepath, fields, t)
             if plotdiv:
                 make_divplots(figprepath, controlprepath, nlhprepath, t)
     elif seq.lower() == "no":
         ppool = ProcessPoolExecutor(max_workers = 4) 
-        ppool.map(partial_combplots, tlist)
+        if len(fields)> 0:
+            ppool.map(partial_combplots, tlist)
         if plotdiv:
             ppool.map(partial_divplots, tlist)
         ppool.shutdown()
@@ -355,9 +365,19 @@ elif runtype.lower() == "both":
           "'combplots', where these plots will be placed. This is done to avoid cluttering up the directory if you decide"
           "to put all figures for recreation in the same folder.")
     controlprepath = input("Enter the directory containing the post-processed data for the CONTROL simulation: ").rstrip("/")
+    if not path.exists(controlprepath):
+        raise Exception("CONTROL post-processed files not found!")
     nlhprepath = input("Enter the directory containing the post-processed data for the NLH simulation: ").rstrip("/ ")
+    if not path.exists(nlhprepath):
+        raise Exception("NLH post-processed files not found!")
     t0 = input("Enter the start time for plotting in yyyy-mm-dd-HHMMSS format: ")
     tf = input("Enter the end time for plotting in yyyy-mm-dd-HHMMSS format: ")
+    if (datetime.strptime(tf, "%Y-%m-%d-%H%M%S") - datetime.strptime(t0, "%Y-%m-%d-%H%M%S") < timedelta(seconds = 1)):
+        raise Exception("End time must be later than start time!")
+    if (not path.exists(f"{controlprepath}/mvars-cart-{t0}-g1.nc")) or (not path.exists(f"{nlhprepath}/mvars-cart-{t0}-g1.nc")):
+        raise Exception("Selected start time not available in post-processed data!")
+    if (not path.exists(f"{controlprepath}/mvars-cart-{tf}-g1.nc")) or (not path.exists(f"{nlhprepath}/mvars-cart-{tf}-g1.nc")):
+        raise Exception("Selected end time not available in post-processed data!")
     fields = input("Enter the list of fields you want to plot, as comma-separated values: ")
     '''
     Available fields are:
@@ -371,7 +391,7 @@ elif runtype.lower() == "both":
     div: Instantaneous horizontal divergence at two user-chosen altitudes over the northwest part of the model domain
     '''
     fields = fields.split(",")
-    fields = [i.strip() for i in fields]
+    fields = [i.strip().lower() for i in fields]
     print(fields)
     plotdiv = False
     if "div" in fields:
@@ -383,12 +403,14 @@ elif runtype.lower() == "both":
     seq = input("Is this a test run? Yes or No? ")
     if seq.lower() == "yes":
         for t in tlist:
-            make_combplots(figprepath, controlprepath, nlhprepath, fields, t)
+            if len(fields) > 0:
+                make_combplots(figprepath, controlprepath, nlhprepath, fields, t)
             if plotdiv:
                 make_divplots(figprepath, controlprepath, nlhprepath, t)
     elif seq.lower() == "no":
         ppool = ProcessPoolExecutor(max_workers = 4) 
-        ppool.map(partial_combplots, tlist)
+        if len(fields) > 0:
+            ppool.map(partial_combplots, tlist)
         if plotdiv:
             ppool.map(partial_divplots, tlist)
         ppool.shutdown()
